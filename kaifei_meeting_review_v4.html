@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>凱霏美學 × 餐飲顧問 — 會議紀錄補充</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --g-deep: #2D4A3E;
+  --g-mid: #4A7C68;
+  --g-light: #8AB5A0;
+  --g-pale: #E8F2EE;
+  --g-mist: #F4FAF7;
+  --earth: #8B7355;
+  --earth-pale: #F5F0E8;
+  --ink: #1C2B25;
+  --ink-soft: #6B8578;
+  --rule: #D4E5DC;
+  --white: #FDFDF9;
+  --amber: #C4860A;
+  --amber-pale: #FDF5E4;
+  --pending-bg: #FFF8EC;
+  --pending-border: #F0C060;
+  --pending-text: #B07800;
+  --font: -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+}
+
+html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: var(--font);
+  background: var(--white);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+/* ── Header ── */
+.header {
+  background: var(--g-deep);
+  color: #fff;
+  padding: 36px 20px 28px;
+}
+.brand-tag {
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--g-light);
+  margin-bottom: 10px;
+}
+.header h1 {
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.45;
+  margin-bottom: 16px;
+}
+.meta-row {
+  display: flex; flex-wrap: wrap; gap: 10px 20px;
+  font-size: 12px; color: rgba(255,255,255,0.5);
+}
+
+/* ── Instructions ── */
+.instructions {
+  background: var(--earth-pale);
+  border-left: 3px solid var(--earth);
+  padding: 16px 20px;
+  font-size: 13px;
+  color: #5C4A30;
+  line-height: 1.7;
+}
+.legend {
+  display: flex; flex-wrap: wrap; gap: 10px 20px;
+  margin-top: 10px;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 12px; color: #5C4A30;
+}
+.legend-dot {
+  width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0;
+}
+.dot-pending { background: var(--pending-bg); border: 1.5px solid var(--pending-border); }
+.dot-added { background: var(--g-pale); border: 1.5px solid var(--g-light); }
+
+/* ── Progress ── */
+.progress-wrap {
+  background: var(--g-mist);
+  padding: 14px 20px;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--rule);
+  position: sticky; top: 0; z-index: 100;
+}
+.progress-label { font-size: 12px; color: var(--ink-soft); white-space: nowrap; }
+.progress-track { flex: 1; height: 5px; background: var(--rule); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--g-mid); border-radius: 3px; width: 0%; transition: width 0.35s; }
+.progress-count { font-size: 12px; color: var(--g-mid); font-weight: 600; white-space: nowrap; }
+
+/* ── Main ── */
+.main { padding: 16px 16px 120px; }
+
+/* ── Section ── */
+.section {
+  margin-bottom: 14px;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+}
+.sec-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px;
+  background: var(--g-mist);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 56px;
+}
+.sec-num { font-size: 10px; font-weight: 600; letter-spacing: 2px; color: var(--g-mid); min-width: 22px; }
+.sec-title { font-size: 15px; font-weight: 500; flex: 1; color: var(--g-deep); }
+.sec-badge {
+  font-size: 11px; padding: 3px 9px; border-radius: 20px;
+  border: 1px solid var(--rule); color: var(--ink-soft); background: #fff;
+  white-space: nowrap; transition: all 0.2s;
+}
+.sec-badge.has-content { background: var(--g-pale); color: var(--g-mid); border-color: var(--g-light); }
+.chevron { font-size: 12px; color: var(--ink-soft); transition: transform 0.2s; flex-shrink: 0; }
+.chevron.open { transform: rotate(180deg); }
+
+.sec-body { display: none; }
+.sec-body.open { display: block; }
+
+/* ── Row ── */
+.row { border-top: 1px solid var(--rule); }
+
+.row-top { padding: 14px 16px 10px; }
+.row-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+  color: var(--ink-soft); margin-bottom: 5px;
+}
+
+/* Normal value */
+.row-value {
+  font-size: 14px; color: var(--ink); line-height: 1.65;
+}
+
+/* Pending value — amber highlight */
+.row-value.pending {
+  font-size: 14px;
+  color: var(--pending-text);
+  background: var(--pending-bg);
+  border: 1.5px dashed var(--pending-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  line-height: 1.65;
+  font-style: italic;
+}
+
+/* Row with content added */
+.row.has-content .row-top { background: #FAFDFB; }
+
+/* ── Add button ── */
+.row-btns { padding: 0 16px 14px; }
+.btn-add {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; padding: 11px 12px;
+  border-radius: 10px;
+  border: 1.5px solid #E5CC80;
+  background: #fff; color: var(--amber);
+  font-family: var(--font);
+  font-size: 14px; font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-add:hover, .btn-add.active {
+  background: var(--amber-pale);
+  border-color: var(--amber);
+  color: #7A5200;
+}
+.btn-add.active { border-style: solid; }
+
+/* ── Comment ── */
+.comment-box {
+  display: none;
+  padding: 0 16px 16px;
+  background: #FAFCFB;
+  border-top: 1px solid var(--rule);
+}
+.comment-box.show { display: block; }
+.comment-hint { font-size: 12px; color: var(--ink-soft); margin: 10px 0 6px; }
+.comment-input {
+  width: 100%; padding: 12px 14px;
+  font-family: var(--font);
+  font-size: 14px; line-height: 1.65;
+  color: var(--ink);
+  background: #fff;
+  border: 1.5px solid var(--amber);
+  border-radius: 10px;
+  resize: vertical; min-height: 80px;
+  outline: none;
+}
+.comment-input:focus { border-color: var(--g-mid); }
+
+/* ── Sub-divider ── */
+.sub-div {
+  padding: 7px 16px;
+  font-size: 10px; font-weight: 600; letter-spacing: 2px;
+  color: var(--g-light); background: var(--g-mist);
+  border-top: 1px solid var(--rule);
+  text-transform: uppercase;
+}
+
+/* ── Tags ── */
+.tag {
+  display: inline-block; font-size: 11px; font-weight: 500;
+  padding: 2px 9px; border-radius: 20px; margin: 2px 3px 2px 0;
+}
+.tg { background: var(--g-pale); color: #1C5040; }
+.ta { background: var(--amber-pale); color: #6A4400; }
+.tb { background: #F0EDE8; color: #4A4038; }
+.tt { background: #E4F5F0; color: #1A5040; }
+.tbl { background: #EAF1F8; color: #1A3A6A; }
+
+/* ── Bottom Bar ── */
+.bottom-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--g-deep);
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  display: flex; gap: 10px;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+  z-index: 200;
+}
+.bar-btn {
+  flex: 1; padding: 13px 10px;
+  border-radius: 12px;
+  font-family: var(--font);
+  font-size: 14px; font-weight: 500;
+  cursor: pointer; border: none;
+  min-height: 50px;
+  -webkit-tap-highlight-color: transparent;
+}
+.bar-btn-copy { background: var(--g-mid); color: #fff; }
+.bar-btn-copy:active { background: var(--g-light); }
+.bar-btn-print {
+  background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.8);
+  border: 1px solid rgba(255,255,255,0.2);
+  font-size: 13px; flex: 0 0 auto; padding: 13px 18px;
+}
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
+  background: var(--ink); color: #fff;
+  font-size: 13px; padding: 10px 22px;
+  border-radius: 30px; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  z-index: 300;
+}
+.toast.show { opacity: 1; }
+
+@media print {
+  .progress-wrap, .bottom-bar, .row-btns, .comment-box { display: none !important; }
+  .sec-body { display: block !important; }
+  .section { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="brand-tag">KAIFEI AESTHETICS × 餐飲顧問</div>
+  <h1>初次洽談會議紀錄<br>請補充 & 填寫待確認事項</h1>
+  <div class="meta-row">
+    <span>📅 2026.3.27</span>
+    <span>📍 桃園</span>
+    <span>👥 顧問：Jo</span>
+  </div>
+</div>
+
+<div class="instructions">
+  <strong>給凱霏團隊：</strong>以下為今日會議紀錄整理。請針對需要補充的項目點選「＋ 補充內容」填寫說明，橘色標示的項目為尚未定案、待填寫的事項。完成後點下方「複製回覆」傳回給我們。
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot dot-pending"></div>待填寫 / 尚未定案</div>
+    <div class="legend-item"><div class="legend-dot dot-added"></div>已補充內容</div>
+  </div>
+</div>
+
+<div class="progress-wrap">
+  <span class="progress-label">補充進度</span>
+  <div class="progress-track"><div class="progress-fill" id="pFill"></div></div>
+  <span class="progress-count" id="pCount">0 項已補充</span>
+</div>
+
+<div class="main">
+
+<!-- ── 01 ── -->
+<div class="section">
+  <div class="sec-header" onclick="toggleSec(this)">
+    <span class="sec-num">01</span>
+    <span class="sec-title">主業 & 銷售</span>
+    <span class="sec-badge" id="sb1">未補充</span>
+    <span class="chevron open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">主要療程項目</div>
+        <div class="row-value pending">標準化項目制定中，請補充目前已確定的方向</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" placeholder="例如：目前已確定的項目有…" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">客單價區間</div>
+        <div class="row-value">NT$4,000 – 10,000</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">餐飲結構</div>
+        <div class="row-value pending">普通會員 / 頂級會員差異化架構尚未定案，請補充方向</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" placeholder="會員制架構有任何想法？" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">每日客量</div>
+        <div class="row-value">每位美容師最多 5 位 / 天；療程 60–90 分鐘（不含餐飲）</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">頌缽課程</div>
+        <div class="row-value">另外討論，不提供餐飲</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="sub-div">行銷 & 營運政策</div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">行銷 TA</div>
+        <div class="row-value">35–50 歲女性；著重平日 me time；預計週日、週一店休</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">陪同政策</div>
+        <div class="row-value">客人先生可一同前來</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" placeholder="先生的用餐安排有任何想法？" oninput="onInput(this)"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 02 ── -->
+<div class="section">
+  <div class="sec-header" onclick="toggleSec(this)">
+    <span class="sec-num">02</span>
+    <span class="sec-title">顧客體驗流程</span>
+    <span class="sec-badge" id="sb2">未補充</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">完整流程</div>
+        <div class="row-value">迎賓（一樓）→ 填資料 / 選課程 → 美容療程 → 一樓用餐</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">迎賓 set 內容</div>
+        <div class="row-value">毛巾 + 飲品 + 小點（餅乾 / 小盤點心）；以 set 整體呈現</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">餐點出現時機</div>
+        <div class="row-value">療程後主餐；療程前僅迎賓茶飲 & 小點</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">用餐地點</div>
+        <div class="row-value">一樓獨立用餐空間</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 03 ── -->
+<div class="section">
+  <div class="sec-header" onclick="toggleSec(this)">
+    <span class="sec-num">03</span>
+    <span class="sec-title">用餐時間</span>
+    <span class="sec-badge" id="sb3">未補充</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">座位數 & 節奏</div>
+        <div class="row-value pending">座位數待討論，請補充預計座位數及希望的用餐時長</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" placeholder="例如：預計 8 個座位，用餐約 30 分鐘…" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">出餐通知流程</div>
+        <div class="row-value">療程結束前美容師通知櫃檯 → 行政負責加熱；目標 10–15 分鐘上桌</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 04 ── -->
+<div class="section">
+  <div class="sec-header" onclick="toggleSec(this)">
+    <span class="sec-num">04</span>
+    <span class="sec-title">出餐時間</span>
+    <span class="sec-badge" id="sb4">未補充</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">目標出餐時間</div>
+        <div class="row-value">10–15 分鐘內</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">最大同時出餐量</div>
+        <div class="row-value">全床位共 7 位；最大峰值 7 桌同時出餐</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 05 ── -->
+<div class="section">
+  <div class="sec-header" onclick="toggleSec(this)">
+    <span class="sec-num">05</span>
+    <span class="sec-title">設備 & 儲存空間</span>
+    <span class="sec-badge" id="sb5">未補充</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">加熱設備</div>
+        <div class="row-value">家用微波爐（先使用，日後換商用）；烤箱、蒸爐待確認</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">請補充現有設備清單：</p><textarea class="comment-input" placeholder="例如：有蒸爐一台、烤箱型號…" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">冷藏設備</div>
+        <div class="row-value pending">冰箱規格待確認，位於地下室，請補充容量及型號</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">請補充冰箱容量 / 規格：</p><textarea class="comment-input" placeholder="例如：雙門冰箱，容量約 500L…" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">備餐區</div>
+        <div class="row-value pending">位置與坪數待確認，請補充</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">請補充備餐區位置與大小：</p><textarea class="comment-input" placeholder="例如：一樓後方，約 2 坪…" oninput="onInput(this)"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 06 ── -->
+<div class="section">
+  <div class="sec-header" onclick="toggleSec(this)">
+    <span class="sec-num">06</span>
+    <span class="sec-title">電力</span>
+    <span class="sec-badge" id="sb6">未補充</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">備餐區電力</div>
+        <div class="row-value pending">插座數量與配置電力待確認，請補充</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">請補充插座數量 / 安培數：</p><textarea class="comment-input" placeholder="例如：4 個插座，110V…" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">大樓用電限制</div>
+        <div class="row-value pending">大樓用電上限待確認，請補充</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 07 ── -->
+<div class="section">
+  <div class="sec-header" onclick="toggleSec(this)">
+    <span class="sec-num">07</span>
+    <span class="sec-title">器皿 & 餐具</span>
+    <span class="sec-badge" id="sb7">未補充</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">目前庫存</div>
+        <div class="row-value">尚無任何餐具，需從零採購</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">風格方向</div>
+        <div class="row-value">自然系、木質調；品牌主色為綠色系</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">有參考圖或更具體的方向嗎？</p><textarea class="comment-input" placeholder="例如：日式禪意 / 台灣在地材質…" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">採購方向</div>
+        <div class="row-value">餐盤以淘寶為主；外帶紙杯備著，以內用體驗為優先</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 08 ── -->
+<div class="section">
+  <div class="sec-header" onclick="toggleSec(this)">
+    <span class="sec-num">08</span>
+    <span class="sec-title">菜色 & 道數</span>
+    <span class="sec-badge" id="sb8">未補充</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">菜單類型</div>
+        <div class="row-value">依療程提供兩款：<span class="tag ta">溫補型</span><span class="tag tt">清爽型</span></div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" placeholder="溫補型對應哪些療程？" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">道數</div>
+        <div class="row-value pending">道數尚未定案，請補充你心目中的組合</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" placeholder="例如：湯 + 主食 + 甜點，約 3 道…" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">素食選項</div>
+        <div class="row-value">兩套菜單皆可調整；是否提供素食版本仍在評估</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">菜單週期</div>
+        <div class="row-value">以季為單位更換；回流客多時再優化</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 09 ── -->
+<div class="section">
+  <div class="sec-header" onclick="toggleSec(this)">
+    <span class="sec-num">09</span>
+    <span class="sec-title">飲料 & 飲品</span>
+    <span class="sec-badge" id="sb9">未補充</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">迎賓飲品</div>
+        <div class="row-value">含於迎賓 set 內；不另外收費</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">飲品風格方向</div>
+        <div class="row-value pending">飲品風格方向待確認，請補充偏好</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">有偏好的飲品方向嗎？</p><textarea class="comment-input" placeholder="例如：玫瑰洛神花茶、薑汁熱飲…" oninput="onInput(this)"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 10 ── -->
+<div class="section">
+  <div class="sec-header" onclick="toggleSec(this)">
+    <span class="sec-num">10</span>
+    <span class="sec-title">外帶 & 打包</span>
+    <span class="sec-badge" id="sb10">未補充</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">外帶政策</div>
+        <div class="row-value">提供外帶（限趕時間客人）；包裝需與品牌視覺一致</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">包裝成本</div>
+        <div class="row-value pending">包裝預算待評估，請補充大概的預算範圍</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 11 ── -->
+<div class="section">
+  <div class="sec-header" onclick="toggleSec(this)">
+    <span class="sec-num">11</span>
+    <span class="sec-title">價格 & 成本</span>
+    <span class="sec-badge" id="sb11">未補充</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">餐飲定價（暫定）</div>
+        <div class="row-value">NT$120</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">食材成本</div>
+        <div class="row-value">定價確認後滾動討論</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 12 ── -->
+<div class="section">
+  <div class="sec-header" onclick="toggleSec(this)">
+    <span class="sec-num">12</span>
+    <span class="sec-title">品牌定位</span>
+    <span class="sec-badge" id="sb12">未補充</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">餐飲品牌</div>
+        <div class="row-value">未來希望獨立品牌（Drøm）；現階段掛凱霏美學</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">展店計畫</div>
+        <div class="row-value">第二間預計開在竹北；僅自營，不開放加盟</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">人力配置</div>
+        <div class="row-value">
+          <span class="tag tg">美容師 3（正職）</span>
+          <span class="tag tt">櫃檯 1</span>
+          <span class="tag tbl">兒童 1</span>
+          <span class="tag ta">行銷 1</span>
+          <span class="tag tb">頌缽老師（外部合作）</span>
+        </div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 13 ── -->
+<div class="section">
+  <div class="sec-header" onclick="toggleSec(this)">
+    <span class="sec-num">13</span>
+    <span class="sec-title">「做對了」是什麼感覺</span>
+    <span class="sec-badge" id="sb13">未補充</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">客人離開後想說的話</div>
+        <div class="row-value pending">今日未討論，請補充——客人吃完這餐，你希望她說什麼？</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" placeholder="例如：「好久沒有這樣被好好照顧」…" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">風格偏向</div>
+        <div class="row-value pending">「北歐極簡」vs「溫暖自然」尚未確認，請補充直覺偏好</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" placeholder="例如：偏溫暖自然，但不要太鄉村風…" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">參考體驗</div>
+        <div class="row-value pending">今日未討論，請補充——有哪個地方或哪頓飯讓你覺得「就是這種感覺」？</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" placeholder="餐廳名稱、IG 帳號、或描述都可以…" oninput="onInput(this)"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 14 ── -->
+<div class="section">
+  <div class="sec-header" onclick="toggleSec(this)">
+    <span class="sec-num">14</span>
+    <span class="sec-title">時間 & 開幕</span>
+    <span class="sec-badge" id="sb14">未補充</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">正式開幕</div>
+        <div class="row-value">五月中後</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">試營運</div>
+        <div class="row-value">四月底開始，約兩週</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 15 ── -->
+<div class="section">
+  <div class="sec-header" onclick="toggleSec(this)">
+    <span class="sec-num">15</span>
+    <span class="sec-title">品牌核心理念</span>
+    <span class="sec-badge" id="sb15">未補充</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">品牌存在意義</div>
+        <div class="row-value">女性在兼顧各方壓力之餘，先好好照顧自己，才有能力照顧其他人</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">這句話有打到你的感覺嗎？有想補充或調整的嗎？</p><textarea class="comment-input" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">客人離開的感受</div>
+        <div class="row-value pending">今日未討論，請補充——你希望客人離開這裡帶走的「感受」是什麼？</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" placeholder="例如：輕盈感、被滋養、有力量繼續…" oninput="onInput(this)"></textarea></div>
+    </div>
+    <div class="row">
+      <div class="row-top">
+        <div class="row-label">絕對不要的東西</div>
+        <div class="row-value pending">今日未討論，請補充——有沒有什麼是你絕對不想在這個空間出現的？</div>
+      </div>
+      <div class="row-btns"><button class="btn-add" onclick="toggleComment(this)">＋ 補充內容</button></div>
+      <div class="comment-box"><p class="comment-hint">補充說明：</p><textarea class="comment-input" placeholder="氛圍、食材、風格、感受…都可以說" oninput="onInput(this)"></textarea></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<div class="bottom-bar">
+  <button class="bar-btn bar-btn-copy" onclick="copyResults()">📋 複製補充結果，傳給顧問</button>
+  <button class="bar-btn bar-btn-print" onclick="window.print()">列印</button>
+</div>
+
+<div class="toast" id="toast">✓ 已複製！請貼到 Line 傳給我們</div>
+
+<script>
+function toggleComment(btn) {
+  const cb = btn.closest('.row').querySelector('.comment-box');
+  const isShow = cb.classList.contains('show');
+  cb.classList.toggle('show', !isShow);
+  btn.classList.toggle('active', !isShow);
+  if (!isShow) setTimeout(() => cb.querySelector('textarea').focus(), 150);
+}
+
+function onInput(ta) {
+  const row = ta.closest('.row');
+  const hasText = ta.value.trim().length > 0;
+  row.classList.toggle('has-content', hasText);
+  // update section badge
+  const sec = row.closest('.section');
+  const filled = sec.querySelectorAll('.row.has-content').length;
+  const badge = sec.querySelector('.sec-badge');
+  if (filled > 0) {
+    badge.textContent = filled + ' 項已補充';
+    badge.classList.add('has-content');
+  } else {
+    badge.textContent = '未補充';
+    badge.classList.remove('has-content');
+  }
+  updateProgress();
+}
+
+function updateProgress() {
+  const all = document.querySelectorAll('.comment-input');
+  const filled = Array.from(all).filter(t => t.value.trim().length > 0).length;
+  document.getElementById('pFill').style.width = (filled / all.length * 100) + '%';
+  document.getElementById('pCount').textContent = filled + ' 項已補充';
+}
+
+function toggleSec(header) {
+  const body = header.nextElementSibling;
+  const chevron = header.querySelector('.chevron');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chevron.classList.toggle('open', isOpen);
+}
+
+function copyResults() {
+  const sections = document.querySelectorAll('.section');
+  const lines = ['【凱霏美學 × 餐飲顧問 會議紀錄補充回覆】', ''];
+
+  sections.forEach(sec => {
+    const title = sec.querySelector('.sec-title').textContent.trim();
+    const rows = sec.querySelectorAll('.row');
+    let secLines = [];
+
+    rows.forEach(row => {
+      const label = row.querySelector('.row-label').textContent.trim();
+      const ta = row.querySelector('.comment-input');
+      const comment = ta ? ta.value.trim() : '';
+      if (comment) secLines.push('  ＋ ' + label + '\n    → ' + comment);
+    });
+
+    if (secLines.length > 0) {
+      lines.push('▌ ' + title);
+      secLines.forEach(l => lines.push(l));
+      lines.push('');
+    }
+  });
+
+  const total = document.querySelectorAll('.comment-input').length;
+  const filled = Array.from(document.querySelectorAll('.comment-input')).filter(t => t.value.trim()).length;
+
+  if (filled === 0) {
+    lines.push('（尚未填寫任何補充內容）');
+  } else {
+    lines.push('── 共補充 ' + filled + ' 項 ──');
+  }
+
+  const text = lines.join('\n');
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(showToast).catch(() => fallback(text));
+  } else {
+    fallback(text);
+  }
+}
+
+function fallback(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;left:-9999px;top:0';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  showToast();
+}
+
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+updateProgress();
+</script>
+</body>
+</html>
